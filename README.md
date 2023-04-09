@@ -59,9 +59,34 @@ To use netmuxd stop the original `usbmuxd` and run `netmuxd` before starting alt
 > The following build instructions apply to archlinux only, but should be roughly the same on other distros.
 
 - 🚧 Install Build Dependencies
-  ```bash
-  yay -S boost clang cmake ninja git libcorecrypto-git zlib python3 avahi
-  ```
+  - Arch Linux:
+    ```bash
+    yay -S boost clang cmake ninja git libcorecrypto-git zlib python3 avahi
+    ```
+  - Ubuntu:
+    ```bash
+    sudo apt install clang cmake git zlib python3 avahi
+    ```
+    Then we have to install boost libraries. We can download it from [its website](https://www.boost.org/users/download/) and then build them like this:
+    ```bash
+    tar xvf boost_1_XX_Y.tar.gz
+    sudo apt-get install build-essential g++ python3-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev
+    cd boost_1_XX_Y
+    ./bootstrap.sh --prefix=/usr/
+    sudo ./b2 install
+    ```
+	Replacing `1_XX_Y` for the exact version you have downloaded.
+
+    In addition, we need to build and install corecrypto from Apple sources. Since the build is a bit broken, it needs some fixes which I already committed [here](https://github.com/altserver-for-android/corecrypto).
+    You can use it as follows (the last "-j`nproc`" parameter is not necessary, but it speeds the build considerably):
+    ```bash
+    git clone https://github.com/altserver-for-android/corecrypto
+    cd corecrypto
+    mkdir build
+    cd build
+    CC=clang CXX=clang++ cmake ..
+    sudo make install -j`nproc`
+    ```
 
 - 📦 Grab the source
   ```bash
