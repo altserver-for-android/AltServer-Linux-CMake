@@ -33,6 +33,9 @@ if F.endswith('AltServerApp.cpp'):
     content = content.replace(b'#pragma comment( lib, "gdiplus.lib" ) \n', b'')
     content = content.replace(b'#include <gdiplus.h> \n', b'')
     content = content.replace(b'#include "resource.h"\n', b'')
+    content = content.replace(b'#include <Guiddef.h>\n', b'')
+    content = content.replace(b'HRESULT result = CoCreateGuid(&_notificationIconGUID);\n\tif (result != S_OK)\n\t{\n\t\t//TODO: Better error handling?\n\t\tassert(false);\n\t}\n', b'')
+
 
     def removePart(content, start, end):
         content = re.sub(br'\n' + start + br'[\S\s]+?(' + end + br')', br'\1', content)
@@ -160,5 +163,9 @@ void AltServerApp::Stop()
 {
 }
 ''')
+
+if F.endswith('AltServerApp.h'):
+    content = content.replace(b'\r', b'')
+    content = content.replace(b'\n\tGUID _notificationIconGUID;\n', b'')
 
 sys.stdout.buffer.write(content)
