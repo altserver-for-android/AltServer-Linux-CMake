@@ -62,7 +62,7 @@ if (altserver_cli)
 
     target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
     set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF CXX_STANDARD_REQUIRED ON)
-    
+
     add_subdirectory(cmake/libusbmuxd)
-    target_link_libraries(${PROJECT_NAME} PUBLIC usbmuxd uuid altserver altsign ${Boost_LIBRARIES} )
+    target_link_libraries(${PROJECT_NAME} PUBLIC usbmuxd uuid altserver altsign ${Boost_LIBRARIES} ${CMAKE_DL_LIBS} )
 endif()
