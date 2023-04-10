@@ -45,7 +45,6 @@ add_subdirectory(cmake/ldid)
 add_subdirectory(cmake/minizip)
 add_subdirectory(cmake/libplist)
 add_subdirectory(cmake/CoreCrypto)
-add_subdirectory(libraries/dnssd_loader)
 add_subdirectory(cmake/libimobiledevice)
 add_subdirectory(cmake/libimobiledevice-glue)
 

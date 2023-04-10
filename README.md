@@ -65,7 +65,7 @@ To use netmuxd stop the original `usbmuxd` and run `netmuxd` before starting alt
     ```
   - Ubuntu:
     ```bash
-    sudo apt install clang cmake git zlib python3 avahi
+    sudo apt install clang cmake git zlib python3 avahi libavahi-compat-libdnssd-dev
     ```
     Then we have to install boost libraries. We can download it from [its website](https://www.boost.org/users/download/) and then build them like this:
     ```bash
