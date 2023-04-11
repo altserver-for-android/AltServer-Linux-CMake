@@ -32,4 +32,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC "${ALTSERVER_DIR}/upstream_pat
 # --------------------------------------------------------------------------------------------------------
 
 find_package(OpenSSL REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC imobiledevice::imobiledevice altsign::altsign "/usr/lib/x86_64-linux-gnu/libdns_sd.so")
+target_link_libraries(${PROJECT_NAME} PUBLIC imobiledevice::imobiledevice altsign::altsign "/usr/lib/$ENV{HOSTTYPE}-linux-gnu/libdns_sd.so")
