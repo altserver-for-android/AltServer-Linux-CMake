@@ -65,19 +65,9 @@ To use netmuxd stop the original `usbmuxd` and run `netmuxd` before starting alt
     ```
   - Ubuntu:
     ```bash
-    sudo apt install clang cmake git zlib python3 avahi libavahi-compat-libdnssd-dev
+    sudo apt install clang cmake git libbz2-dev python3 libavahi-compat-libdnssd-dev libssl-dev libboost-all-dev uuid-dev -y
     ```
-    Then we have to install boost libraries. We can download it from [its website](https://www.boost.org/users/download/) and then build them like this:
-    ```bash
-    tar xvf boost_1_XX_Y.tar.gz
-    sudo apt-get install build-essential g++ python3-dev autotools-dev libicu-dev libbz2-dev libboost-all-dev
-    cd boost_1_XX_Y
-    ./bootstrap.sh --prefix=/usr/
-    sudo ./b2 install
-    ```
-	Replacing `1_XX_Y` for the exact version you have downloaded.
-
-    In addition, we need to build and install corecrypto from Apple sources. Since the build is a bit broken, it needs some fixes which I already committed [here](https://github.com/altserver-for-android/corecrypto).
+    Then, we need to build and install corecrypto from Apple sources. Since the build is a bit broken, it needs some fixes which I already committed [here](https://github.com/altserver-for-android/corecrypto).
     You can use it as follows (the last "-j`nproc`" parameter is not necessary, but it speeds the build considerably):
     ```bash
     git clone https://github.com/altserver-for-android/corecrypto
@@ -97,5 +87,5 @@ To use netmuxd stop the original `usbmuxd` and run `netmuxd` before starting alt
 - 🏗️ Build
   ```bash
   mkdir build && cd build
-  cmake .. && cmake --build . --config Release
+  cmake .. && cmake --build . --config Release -j`nproc`
   ```
