@@ -1,39 +1,91 @@
+name: Build AltServer
+
 on:
-  workflow_dispatch:
   push:
-    branches: ["**"]
-    paths-ignore:
-      - "**/*.md"
+  workflow_dispatch:
+    inputs:
+      sync_upstream:
+        required: false
+        default: false
+      debug_enabled:
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
+  repository_dispatch:
 
-name: Build Binary
+
+env:
+  REGISTRY: ghcr.io
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    container: greyltc/archlinux-aur:paru
-    strategy:
-      fail-fast: false
-      matrix:
-        language: ["cpp"]
 
+  build:
+    strategy:
+      matrix:
+        builder: [ghcr.io/altserver-for-android/altserver_builder_ubuntu_armv7, ghcr.io/altserver-for-android/altserver_builder_ubuntu_aarch64]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           submodules: recursive
-
-      - name: Install build dependencies
-        run: "paru --noconfirm -Syu base-devel cmake clang ninja git make boost zlib python3 avahi && aur-install libcorecrypto-git"
-      
-      - name: Compile
-        run: >
-          mkdir build && cd build
-          && cmake -GNinja -DBUILD_SHARED_LIBS=OFF .. && cmake --build . --config Release -- -j 8
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+      - name: Do Submodule Update
+        if: ${{ needs.check.outputs.updated == '1' }}
+        run:
+          git submodule update --remote -- upstream_repo
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
         with:
-          name: build
-          path: |
-            build/
-            !build/cmake
-            !build/_deps
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare build
+        run: mkdir /tmp/build_output
+
+      - name: Build
+        run: |
+          image=${{ matrix.builder }}
+          docker pull $image
+          docker run -v ${PWD}:/workdir -w /workdir $image bash -c 'mkdir build; cd build; cmake .. && cmake --build . --config Release -j`nproc`'
+          cp build/AltServer-* /tmp/build_output; chmod +x /tmp/build_output/*
+          sudo rm -rf build
+          git clean -fdX
+
+      - name: Upload To Github Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        uses: xresloader/upload-to-github-release@v1.3.12
+        with:
+          path: /tmp/build_output
+
+  release:
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    needs: [build]
+    name: "release"
+    steps:
+    - name: "Create artifact directory"
+      run: |
+        mkdir -p build_output
+    - name: "Download all artifacts"
+      uses: actions/download-artifact@v2
+      with:
+        path: build_output
+    - name: "Rearrange artifacts"
+      run: |
+        find build_output
+        mkdir -p build_release
+        mv build_output/*/* build_release
+        ls build_release
+        if [ "$(ls -A build_release)" ]; then exit 0; else exit 1; fi
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: build_release/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
