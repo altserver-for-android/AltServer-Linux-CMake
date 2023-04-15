@@ -22,7 +22,7 @@ jobs:
   build:
     strategy:
       matrix:
-        builder: [ghcr.io/altserver-for-android/altserver_builder_ubuntu_armv7, ghcr.io/altserver-for-android/altserver_builder_ubuntu_aarch64]
+        builder: [ghcr.io/altserver-for-android/altserver_builder_ubuntu_armv7, ghcr.io/altserver-for-android/altserver_builder_ubuntu_aarch64, ghcr.io/altserver-for-android/altserver_builder_ubuntu_amd64]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
