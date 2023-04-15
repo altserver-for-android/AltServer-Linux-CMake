@@ -58,10 +58,10 @@ jobs:
 
       - name: Upload To Github Release
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: xresloader/upload-to-github-release@v1.3.12
         with:
-          path: /tmp/build_output
+          file: "/tmp/build_output/altserver-linux-*"
 
   release:
     runs-on: ubuntu-latest
