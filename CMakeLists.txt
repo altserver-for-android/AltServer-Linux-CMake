@@ -47,7 +47,6 @@ add_subdirectory(cmake/libplist)
 add_subdirectory(cmake/CoreCrypto)
 add_subdirectory(cmake/libimobiledevice)
 add_subdirectory(cmake/libimobiledevice-glue)
-
 add_subdirectory(cmake/AltSign)
 add_subdirectory(cmake/AltServer)
 
@@ -58,6 +57,10 @@ add_subdirectory(cmake/AltServer)
 if (altserver_cli)
     file(GLOB src "src/*.cpp")
     add_executable(${PROJECT_NAME} ${src})
+
+    # Rename the final binary to identify the architecture of the build
+    EXECUTE_PROCESS(COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCH)
+    set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "altserver-linux-${ARCH}")
 
     target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
     set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF CXX_STANDARD_REQUIRED ON)
